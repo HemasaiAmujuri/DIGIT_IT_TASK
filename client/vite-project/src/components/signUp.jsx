@@ -1,14 +1,14 @@
 import { useState } from "react";
-import "../styles/login.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import "../styles/signUp.css";
 
-function Login() {
+function Signup() {
     const [formData, setFormData] = useState({
+        name: "",
         email: "",
         password: "",
+        confirmPassword: "",
     });
-
-    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({
@@ -19,71 +19,87 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetchData();
-    };
 
+        // 🔒 Basic validation
+        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+            alert("All fields are required");
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            alert("Password must be at least 6 characters");
+            return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            alert("Password and Confirm Password do not match");
+            return;
+        }
+
+        fetchData();
+        console.log(formData);
+    };
 
     async function fetchData() {
         try {
-            const response = await fetch(
-                "http://localhost:5000/api/user/login",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(formData),
-                }
-            );
-
-            const data = await response.json();
-
-            if (response.ok) {
-                console.log(data, "data from login");
-                localStorage.setItem("token", data?.data?.token); // Store token for future use
-                navigate("/products");
-            } else {
-                alert(data.message || "Login Failed");
-            }
+            const response = await fetch("http://localhost:3000/api/user/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
         } catch (error) {
-            console.error("Error logging in:", error);
+            console.error("Error signing up:", error);
         }
     }
 
     return (
         <div className="container">
-            <div className="login-box">
-                <h2>Login</h2>
+            <div className="signup-box">
+                <h2>Sign Up</h2>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Enter Email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Enter Name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                    />
 
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Enter Password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
 
-                    <button type="submit">Login</button>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <button type="submit">Sign Up</button>
 
                     <p className="auth-link">
-                        Don't have an account? <Link to="/signup">Sign Up</Link>
+                        Already have an account? <Link to="/login">Login</Link>
                     </p>
                 </form>
             </div>
@@ -91,5 +107,4 @@ function Login() {
     );
 }
 
-export default Login;
-
+export default Signup;

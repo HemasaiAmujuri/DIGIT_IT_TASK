@@ -26,7 +26,7 @@ function Login() {
     async function fetchData() {
         try {
             const response = await fetch(
-                "http://localhost:5000/api/user/login",
+                "http://localhost:3000/api/user/login",
                 {
                     method: "POST",
                     headers: {
@@ -40,8 +40,9 @@ function Login() {
 
             if (response.ok) {
                 console.log(data, "data from login");
-                localStorage.setItem("token", data?.data?.token); // Store token for future use
-                navigate("/products");
+                localStorage.setItem("token", data?.token);
+                localStorage.setItem("userId", data?.data?._id); // Store user ID for future use
+                navigate("/llm-chat");
             } else {
                 alert(data.message || "Login Failed");
             }
