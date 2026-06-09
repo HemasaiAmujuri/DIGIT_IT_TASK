@@ -2,21 +2,23 @@ const express = require("express");
 
 const axios = require("axios");
 
+const LlmInfo = require("../../models/llmInfo/llmInfo");
+
 const askQuestion = async (req, res) => {
     try {
-        const { question } = req.body;
+        const { question, userId } = req.body;
 
-        if (!question) {
+        if (!question && !userId) {
             return res.status(400).json({
                 success: false,
-                message: "Question is required"
+                message: "Question and User ID are required"
             });
         }
 
         const response = await axios.post(
             "https://openrouter.ai/api/v1/chat/completions",
             {
-                model: "meta-llama/llama-3.3-8b-instruct:free",
+                model: "nex-agi/nex-n2-pro:free",
                 messages: [
                     {
                         role: "user",
@@ -34,10 +36,18 @@ const askQuestion = async (req, res) => {
 
         const answer = response.data.choices[0].message.content;
 
+        const llmInfo = new LlmInfo({
+            question,
+            answer,
+            userId: userId
+        });
+
+        await llmInfo.save();
+
         return res.status(200).json({
             success: true,
-            question,
-            answer
+            data: llmInfo,
+            message: "Response from LLM saved successfully"
         });
 
     } catch (error) {

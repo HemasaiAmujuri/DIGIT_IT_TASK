@@ -12,6 +12,6 @@ const { askQuestion } = require("../controllers/llmIntegration/llmIntegration");
 
 router.post("/user/register", register);
 router.post("/user/login", login);
-router.post("/ask-question", askQuestion);
+router.post("/llm/ask-question", askQuestion);
 
 module.exports = router;
