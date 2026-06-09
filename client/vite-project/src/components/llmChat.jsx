@@ -27,7 +27,7 @@ function LLMChat() {
             const data = await res.json();
 
             // Update according to your API response
-            setResponse(data.response);
+            setResponse(data?.data?.answer || "No answer received.") ;
         } catch (error) {
             console.error(error);
             setResponse("Something went wrong.");
